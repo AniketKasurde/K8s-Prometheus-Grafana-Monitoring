@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-app
+  namespace: monitoring
+  labels:
+    app: sample-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-app
+  template:
+    metadata:
+      labels:
+        app: sample-app
+    spec:
+      containers:
+      - name: sample-app
+        image: sample-app:v1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+          name: http                     # naming ports is important
+                                         # ServiceMonitor references this name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-app
+  namespace: monitoring
+  labels:
+    app: sample-app                      # ServiceMonitor uses this label
+                                         # to find this service
+spec:
+  type: NodePort
+  selector:
+    app: sample-app
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
