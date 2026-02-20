@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1      # Prometheus Operator's API group
+kind: ServiceMonitor                       # Custom resource, not built-in K8s
+metadata:
+  name: sample-app-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus-stack             # Critical — must match Prometheus
+                                          # Operator's label selector
+spec:
+  selector:
+    matchLabels:
+      app: sample-app                     # Must match your Service labels
+  endpoints:
+  - port: http                            # Must match port NAME in Service
+    interval: 15s                         # Scrape every 15 seconds
+    path: /metrics                        # Endpoint to scrape
